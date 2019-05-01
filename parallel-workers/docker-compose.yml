@@ -1,0 +1,7 @@
+worker:
+    #container_name: service_worker
+    build: .
+    environment:
+        - HOST=192.168.2.125
+        - USERNAME=worker
+        - PASSWORD=worker
