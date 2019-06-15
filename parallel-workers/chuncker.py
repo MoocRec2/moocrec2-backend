@@ -6,6 +6,7 @@ actually breaking the video into pieces/separate files.
 """
 import cv2
 import os
+import math
 
 def frame_count(video_path: str) -> int:
     """
@@ -90,7 +91,60 @@ def video_metadata(video_path: str) -> dict:
     }
 
 
+def get_logical_chunks(video_path: str, chunk_length=60) -> list:
+    """
+    Creates a list of logical video chunks by analyzing the given single video file.
+    NOTE: Each video chunk is 1 minute long.
 
+    Start and end point of each chunk is defined as the frame number to start reading,
+    and the frame number of stop reading at.
+    NOTE: Frame rate affects this.
+    
+    :param video_path
+        Absolute path to the video file.
+        (Relative path should also work but stick to absolute).
+    :param chunk_length
+        Length of a logical video chunk in seconds.
+        OPTIONAL
+        DEFAULT = 60
 
-frames = video_metadata('/Users/anushka/Downloads/11.mp4')
-print (frames)
+    :returns list
+        A list of dictionaries where each dictionary specifies a starting and ending point
+        on the original video file.
+    """
+
+    metadata = video_metadata(video_path)
+    frame_count, duration, fps = metadata['Frames']['Value'], metadata['Duration']['Value'], metadata['FPS']['Value']
+
+    if (frame_count and duration and fps) > 0:
+        frame_count_per_chunk = fps * chunk_length
+        chunks = []
+        chunk_count = 1
+        print (frame_count / frame_count_per_chunk)
+        chunk_total = math.ceil(frame_count / frame_count_per_chunk)
+
+        for i in range(1, frame_count, frame_count_per_chunk):
+            start_frame = i
+            end_frame = i + frame_count_per_chunk
+            # Normalize end_frame.
+            end_frame = frame_count if end_frame > frame_count else end_frame
+
+            chunks.append({
+                'ParentFile': video_path,
+                'StartFrame': start_frame,
+                'EndFrame': end_frame,
+                'Position': '{chunk_count}:{chunk_total}'.format(chunk_count=chunk_count, chunk_total=chunk_total)
+            })
+
+            chunk_count += 1
+        
+        return chunks
+    else:
+        return []
+        
+
+meta = video_metadata('/Users/anushka/Downloads/test.mp4')
+chunks = get_logical_chunks('/Users/anushka/Downloads/test.mp4')
+
+print (meta)
+print (chunks)
