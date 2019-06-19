@@ -119,8 +119,7 @@ def get_logical_chunks(video_path: str, chunk_length=60) -> list:
     if (frame_count and duration and fps) > 0:
         frame_count_per_chunk = fps * chunk_length
         chunks = []
-        chunk_count = 1
-        print (frame_count / frame_count_per_chunk)
+        chunk_number = 1
         chunk_total = math.ceil(frame_count / frame_count_per_chunk)
 
         for i in range(1, frame_count, frame_count_per_chunk):
@@ -133,18 +132,12 @@ def get_logical_chunks(video_path: str, chunk_length=60) -> list:
                 'ParentFile': video_path,
                 'StartFrame': start_frame,
                 'EndFrame': end_frame,
-                'Position': '{chunk_count}:{chunk_total}'.format(chunk_count=chunk_count, chunk_total=chunk_total)
+                'Position': chunk_number,
+                'Total': chunk_total
             })
 
-            chunk_count += 1
+            chunk_number += 1
         
         return chunks
     else:
         return []
-        
-
-meta = video_metadata('/Users/anushka/Downloads/test.mp4')
-chunks = get_logical_chunks('/Users/anushka/Downloads/test.mp4')
-
-print (meta)
-print (chunks)
