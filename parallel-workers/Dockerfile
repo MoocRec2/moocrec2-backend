@@ -3,19 +3,14 @@
 # and the classifier.
 # Therefore, an intermediate container is used to first install,
 # those modules via requirements.txt
-FROM alpine:3.7
+FROM python:3.7-slim
+
+WORKDIR /usr/src/app
 
 # Install Python3.7 and other libraries(pika lib).
-RUN apk add --no-cache python3 && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 install --upgrade pip setuptools && \
-    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
-    if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
-    rm -r /root/.cache && \
-    pip3 install pika
+RUN pip install pika opencv-python
 
-COPY mq_common.py /
-COPY worker.py /
+COPY mq_common.py /usr/src/app
+COPY worker.py /usr/src/app
 
-CMD ["python3", "/worker.py"]
+CMD ["python", "./worker.py"]
