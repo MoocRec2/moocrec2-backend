@@ -2,6 +2,9 @@
 A service-worker, responsible for intercepting a message,
 from message queue and acting on it.
 
+In this case, a worker will analyze a video file mentioned,
+in the message.
+
 NOTE: Use JSON.
       RabbitMQ has no knowladge of what the message syntax is,
       it simply transfers a byte array.
@@ -11,42 +14,96 @@ NOTE: Use JSON.
 
 from datetime import datetime
 from mq_common import init_mq
+from time import time
 import random
 import logging
 import json
 import os
 
 # MQ details.
-KEY = os.getenv('MQ_NAME', 'mq')
+WORKER_KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'mq_w')
+ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'mq_a')
 HOST = os.getenv('MQ_HOST', 'localhost')
 USERNAME = os.getenv('MQ_USERNAME', 'worker')
 PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
-QUEUE = init_mq(host=HOST, name_queue=KEY, username=USERNAME, password=PASSWORD)
-WORKER_ID = random.randint(0, 9)
+
+WORKER_QUEUE = init_mq(
+    host=HOST, name_queue=WORKER_KEY, username=USERNAME, password=PASSWORD)
+ANALYZER_QUEUE = init_mq(
+    host=HOST, name_queue=ANALYZER_KEY, username=USERNAME, password=PASSWORD)
+
+WORKER_ID = str(int(time())) + str(random.randint(0, 9))
 
 # Logging set up.
-logging.basicConfig(filename='worker.log', filemode='w', format='%(asctime)s - %(message)s', level=logging.INFO)
-logging.info('Worker ' + str(WORKER_ID) + ' started at ' + str(datetime.utcnow().isoformat()))
+logging.basicConfig(
+    filename='worker.log',
+    filemode='w',
+    format='%(asctime)s - %(message)s',
+    level=logging.INFO)
+logging.info('Worker ' + str(WORKER_ID) + ' started at ' +
+             str(datetime.utcnow().isoformat()))
+
 
 def on_message(channel, method, properties, body):
+    """
+    Invokes the relevant video chunking method based
+    on the message.
+    """
     # Convert to dictionary.
     message = ''
 
     try:
         message = json.loads(body)
+        # Act on the message.
+        video_path = message['ParentFile'] if 'ParentFile' in message.keys(
+        ) else None
+        start_frame = message['StartFrame'] if 'StartFrame' in message.keys(
+        ) else None
+        end_frame = message['EndFrame'] if 'EndFrame' in message.keys(
+        ) else None
+
+        logging.info(
+            '[PROCESSING] Worker:{worker} --> Video:{video} --> Start Frame:{start_frame} <--> End Frame:{end_frame}'
+            .format(
+                worker=str(WORKER_ID),
+                video=video_path,
+                start_frame=str(start_frame),
+                end_frame=str(end_frame)))
+
+        # Process the chunk.
+
+        # Send the response.
+        # This response should have all the info of the initial message.
+        # NOTE: Responses are sent to a different queue.
+        response = message
+        response['Classification'] = 'Animation'
+        response['WorkerId'] = str(WORKER_ID)
+        ANALYZER_QUEUE.basic_publish(
+            exchange='',
+            routing_key=ANALYZER_KEY,
+            body=json.dumps(response, default=str))
+        
+        # Send acknowladgement.
+        channel.basic_ack(delivery_tag=method.delivery_tag)
+        
+        logging.info(
+            '[CLASSIFIED] Worker:{worker} --> Video:{video} --> Start Frame:{start_frame} <--> End Frame:{end_frame} --> Classification:{classification}'
+            .format(
+                worker=str(WORKER_ID),
+                video=video_path,
+                start_frame=str(start_frame),
+                end_frame=str(end_frame),
+                classification='Animation'))
+
     except ValueError:
         message = body
 
-    logging.info('Worker Id:\t' + str(WORKER_ID) + '\nMessage:\n' + str(message) + '\n')
-    # Send acknowladgement.
-    channel.basic_ack(delivery_tag=method.delivery_tag)
-
 
 # Prep for consuming.
-print ('Worker', WORKER_ID, 'started.\n\n')
+print('Worker', WORKER_ID, 'started.\n\n')
 # We only acknowladge the message after the task is complete,
 # This ensures that the message remains in the qeueu even if the,
 # worker crashes during processing.
-QUEUE.basic_consume(queue=KEY, auto_ack=False, on_message_callback=on_message)
+WORKER_QUEUE.basic_consume(queue=WORKER_KEY, auto_ack=False, on_message_callback=on_message)
 # Start.
-QUEUE.start_consuming()
+WORKER_QUEUE.start_consuming()
