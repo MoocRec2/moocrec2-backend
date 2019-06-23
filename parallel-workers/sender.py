@@ -9,6 +9,7 @@ NOTE: Use JSON.
       pushing it to the MQ, convert it to a JSON string.
 """
 
+from chunker import get_logical_chunks
 from datetime import datetime
 from mq_common import init_mq
 import sys
@@ -18,15 +19,14 @@ import os
 
 
 # MQ details.
-KEY = os.getenv('MQ_NAME', 'mq')
-HOST = os.getenv('MQ_HOST', 'localhost')
+KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'mq')
+HOST = os.getenv('MQ_HOST', '13.235.16.166')
 USERNAME = os.getenv('MQ_USERNAME', 'worker')
 PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
 QUEUE = init_mq(host=HOST, name_queue=KEY, username=USERNAME, password=PASSWORD)
 
-# Sending 5 messages.
-for i in range(1,20):
-    print (i)
-    message = { 'id': i, 'time': datetime.utcnow() }
-    QUEUE.basic_publish(exchange='',routing_key=KEY, body=json.dumps(message, default=str))
+video = '/Users/anushka/CDAP/moocrec2-backend/parallel-workers/video.mp4'
+chunks = get_logical_chunks(video)
 
+for chunk in chunks:
+    QUEUE.basic_publish(exchange='',routing_key=KEY, body=json.dumps(chunk, default=str))
