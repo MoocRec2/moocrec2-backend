@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie-edge">
+    <title>Landing Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/starrr.css">
+    <link rel="stylesheet" href="scss/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="videoPlayer showControls">
+            <div class="videoTitle">
+                Animation Video Style
+            </div>
+
+            <video id="video" preload="auto" src="testVideo1.mp4" type="video/mp4" role="player" autoplay="true">
+            </video>
+
+            <div id="cntrls" class="controls active">
+                <!-- top controls-->
+                <div class="topControls">
+                    <span class="startTime"> 00:00:00 </span>
+                    <div id="seekbar" class="seekbar" role="seekControl">
+                        <div id="progressbar" class="progressbar" role="seekControl"></div>
+                    </div>
+                    <span class="endTime" role="seekControl"> 00:00:00 </span>
+                </div>
+                <!-- bottom controls-->
+                <div class="bottomControls">
+                    <!-- Volume controls-->
+                    <div class="volumeCtrl">
+                        <div class="loudSpeaker-icon" role="muteControl">
+                            <i class="fa fa-volume-up"></i>
+                            <i class="fas fa-volume-mute" role="muteControl"></i>
+                        </div>
+                        <div id="volumeSeekbar" class="seekbarSection" role="volumeControl">
+                            <div class="wrapper" role="volumeControl">
+                                <span class="lbl">Volume</span>
+                                <span class="percentage">100%</span>
+                            </div>
+                            <span class="seekbar" role="volumeControl">
+                                <div class="progressbar" role="volumeControl"></div>
+                            </span>
+
+                        </div>
+                    </div>
+
+                    <!-- Playback control-->
+                    <div class="playbackCtrl">
+                        <button id="backBtn" class="btn backward" role="playerControl">
+                            <i class="fa fa-fast-backward" role="previousSegment"></i>
+                        </button>
+                        <button id="playpauseBtn" class="btn playPausebtn play" role="playerControl">
+                            <i id="playIcon" class="fa fa-play" role="playbackControl"></i>
+                            <i id="pauseIcon" class="fa fa-pause" role="playbackControl"></i>
+                        </button>
+                        <button id="forwardBtn" class="btn forward" role="playerControl">
+                            <i class="fa fa-fast-forward" role="nextSegment"></i>
+                        </button>
+                    </div>
+
+                    <!-- full screen-->
+                    <div class="fullscreenCtrl">
+                        <button id="fullScreenBtn" class="fullscreen" role="playerControl">
+                            <i class="fa fa-expand" role="fullScreen"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEWLY TRIED -->
+    <div class="playlist">
+        <figure id="video_player">
+            <figcaption>
+                <img id="playListItemTalkingHead" src="poster.png" class="playlistItem" source="testVideo1.mp4"
+                    role="playlist" alt="Nambia Timelapse 1">
+                <img id="playListItemAnimation" src="poster.png" class="playlistItem" source="testVideo2.mp4"
+                    role="playlist" alt="Nambia Timelapse 2">
+                <img id="playListItemPresentation" src="poster.png" class="playlistItem" source="testVideo3.mp4"
+                    role="playlist" alt="Nambia Timelapse 3">
+                <img id="playListItemKhanAcademy" src="poster.png" class="playlistItem" source="testVideo4.mp4"
+                    role="playlist" alt="Nambia Timelapse 1">
+                <img id="playListItemCodeTutorial" src="poster.png" class="playlistItem" source="testVideo5.mp4"
+                    role="playlist" alt="Nambia Timelapse 2">
+            </figcaption>
+        </figure>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="popUpModal" tabindex="-1" role="dialog" aria-labelledby="popUpModelLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="popUpModelLabel"> Tell us about your learning experience .. </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex flex-column">
+                        <div class="fc">
+                            <p>How easy was this segmant for you to understand?</p>
+                        </div>
+                        <div class="fc">
+                            <div class="d-flex flex-row">
+                                <div id="question1" class='starrr fr ques1'>
+                                </div>
+                                <div>
+                                    <p id="para" class="fr"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fc">
+                            <p>How interesting was this segmant for you?</p>
+                        </div>
+                        <div class="fc">
+                            <div class="d-flex flex-row">
+                                <div id="question2" class='starrr fr ques2'>
+                                </div>
+                                <div>
+                                    <p id="para2" class="fr"></p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="closeFeedbackBtn" type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Close</button>
+                    <button id="submitFeedbackBtn" type="button" class="btn btn-primary">Next Video Style</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+        </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+        </script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="js/starrr.js"></script>
+
+    <script src="js/view.rec.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

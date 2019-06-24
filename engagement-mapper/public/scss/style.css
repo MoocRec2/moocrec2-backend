@@ -1,0 +1,391 @@
+@import url("https://fonts.googleapis.com/css?family=Questrial");
+body {
+  font-family: "Questrial", sans-serif;
+  background-color: #FFFFFF;
+}
+
+.container {
+  position: fixed;
+  top: 4%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-line-pack: center;
+      align-content: center;
+}
+
+.videoPlayer {
+  max-width: 800px;
+  max-height: 500px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: absolute;
+  background-color: #000000;
+  -webkit-box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+          box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.videoPlayer.showControls .videoTitle {
+  top: 0%;
+}
+
+.videoPlayer.showControls .controls {
+  bottom: 0%;
+}
+
+.videoPlayer .videoTitle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  z-index: 100;
+  top: -50%;
+  padding: 0.5rem;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+}
+
+.videoPlayer video {
+  max-width: 100%;
+}
+
+.videoPlayer .controls {
+  position: absolute;
+  bottom: 0;
+  left: 0%;
+  right: 0%;
+  margin: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+}
+
+.videoPlayer .controls .topControls {
+  padding: 1rem;
+  position: relative;
+}
+
+.videoPlayer .controls .bottomControls {
+  padding: 0.5rem 2rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  position: relative;
+}
+
+.topControls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.topControls .startTime, .topControls .endTime {
+  -ms-flex-preferred-size: 10%;
+      flex-basis: 10%;
+  -ms-flex-negative: 1;
+      flex-shrink: 1;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  color: #acafb6;
+}
+
+.topControls .seekbar {
+  height: 6px;
+  background-color: rgba(172, 175, 182, 0.6);
+  -ms-flex-preferred-size: 80%;
+      flex-basis: 80%;
+  border-radius: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.topControls .seekbar .progressbar {
+  height: 100%;
+  width: 50%;
+  left: 0%;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 5px;
+  position: relative;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.topControls .seekbar .progressbar::after {
+  content: "";
+  position: absolute;
+  height: 4px;
+  width: 4px;
+  top: 0%;
+  bottom: 0%;
+  margin: auto;
+  right: -4px;
+  border-radius: 500px;
+  -webkit-transition: all ease 0.2s;
+  transition: all ease 0.2s;
+}
+
+.topControls .seekbar:hover {
+  cursor: pointer;
+}
+
+.topControls .seekbar:hover .progressbar::after {
+  height: 10px;
+  width: 10px;
+  background-color: white;
+}
+
+.bottomControls .volumeCtrl {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -ms-flex-preferred-size: 15%;
+      flex-basis: 15%;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.bottomControls .volumeCtrl .icon {
+  color: #acafb6;
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.bottomControls .volumeCtrl .seekbarSection {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-preferred-size: 80%;
+      flex-basis: 80%;
+}
+
+.bottomControls .volumeCtrl .seekbarSection .wrapper {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.bottomControls .volumeCtrl .seekbarSection .wrapper .lbl, .bottomControls .volumeCtrl .seekbarSection .wrapper .percentage {
+  font-size: 0.8rem;
+  color: #acafb6;
+  text-transform: capitalize;
+}
+
+.bottomControls .volumeCtrl .seekbarSection .seekbar {
+  margin-top: 2px;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  height: 5px;
+  border-radius: 2px;
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+  background-color: rgba(172, 175, 182, 0.6);
+}
+
+.bottomControls .volumeCtrl .seekbarSection .seekbar .progressbar {
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 2px;
+  position: relative;
+}
+
+.bottomControls .volumeCtrl .seekbarSection .seekbar .progressbar::after {
+  content: "";
+  position: absolute;
+  height: 4px;
+  width: 4px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 500px;
+}
+
+.bottomControls .volumeCtrl .seekbarSection .seekbar:hover {
+  cursor: pointer;
+}
+
+.bottomControls .volumeCtrl .seekbarSection .seekbar:hover .progressbar::after {
+  height: 10px;
+  width: 10px;
+  background-color: white;
+}
+
+.bottomControls .playbackCtrl {
+  -ms-flex-preferred-size: 70%;
+      flex-basis: 70%;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: space-evenly;
+      -ms-flex-pack: space-evenly;
+          justify-content: space-evenly;
+}
+
+.bottomControls .playbackCtrl .btn {
+  font-size: 2rem;
+  background-color: transparent;
+  outline: 0;
+  border: none;
+  color: #acafb6;
+  -webkit-transition: all ease 0.2s;
+  transition: all ease 0.2s;
+}
+
+.bottomControls .playbackCtrl .btn:hover {
+  cursor: pointer;
+}
+
+.bottomControls .playbackCtrl .btn:hover .fa {
+  color: #e2e3e6;
+}
+
+.bottomControls .playbackCtrl .btn.play .fa-pause {
+  display: none;
+}
+
+.bottomControls .playbackCtrl .btn.pause .fa-play {
+  display: none;
+}
+
+.bottomControls .playbackCtrl .btn.forward, .bottomControls .playbackCtrl .btn.backward {
+  font-size: 1.5rem;
+}
+
+.bottomControls .fullscreenCtrl {
+  -ms-flex-preferred-size: 15%;
+      flex-basis: 15%;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+.bottomControls .fullscreenCtrl .fullscreen {
+  font-size: 1.2rem;
+  border: none;
+  background-color: transparent;
+  color: #acafb6;
+  outline: 0;
+}
+
+.bottomControls .fullscreenCtrl .fullscreen:hover {
+  cursor: pointer;
+}
+
+.bottomControls .fullscreenCtrl .fullscreen:hover .fa {
+  color: #e2e3e6;
+}
+
+.playlist {
+  position: absolute;
+  bottom: 14%;
+  left: 0%;
+  right: 0%;
+  margin: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  z-index: 100;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.playlistItem {
+  max-width: 100px;
+  max-height: 100px;
+  -webkit-box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+          box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: #000000;
+          box-shadow: #000000;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: relative;
+  -webkit-transition: -webkit-transform .2s;
+  transition: -webkit-transform .2s;
+  transition: transform .2s;
+  transition: transform .2s, -webkit-transform .2s;
+}
+
+.playlistItem:hover {
+  /* IE 9 */
+  -webkit-transform: scale(1.5);
+  /* Safari 3-8 */
+  transform: scale(1.5);
+  z-index: 10;
+}
+
+.card {
+  width: 75%;
+  height: 30%;
+}
+/*# sourceMappingURL=style.css.map */
