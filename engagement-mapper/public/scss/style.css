@@ -145,7 +145,6 @@ body {
 
 .topControls .seekbar .progressbar {
   height: 100%;
-  width: 50%;
   left: 0%;
   background-color: rgba(255, 255, 255, 0.6);
   border-radius: 5px;
@@ -337,6 +336,33 @@ body {
   color: #e2e3e6;
 }
 
+.bottomControls .transcriptCtrl {
+  -ms-flex-preferred-size: 15%;
+      flex-basis: 15%;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: space-evenly;
+      -ms-flex-pack: space-evenly;
+          justify-content: space-evenly;
+}
+
+.bottomControls .transcriptCtrl .transcript {
+  font-size: 1.2rem;
+  border: none;
+  background-color: transparent;
+  color: #acafb6;
+  outline: 0;
+}
+
+.bottomControls .transcriptCtrl .transcript:hover {
+  cursor: pointer;
+}
+
+.bottomControls .transcriptCtrl .transcript:hover .fa {
+  color: #e2e3e6;
+}
+
 .playlist {
   position: absolute;
   bottom: 14%;
@@ -387,5 +413,9 @@ body {
 .card {
   width: 75%;
   height: 30%;
+}
+
+#closeFeedbackBtn {
+  display: none;
 }
 /*# sourceMappingURL=style.css.map */

@@ -109,7 +109,7 @@ body {
         display: flex;
         .progressbar {
             height: 100%;
-            width: 50%;
+            //width: 50%;
             left: 0%;
             background-color: rgba($color: $white, $alpha: 0.6);
             border-radius: 5px;
@@ -265,6 +265,30 @@ body {
     }
 }
 
+.bottomControls {
+    .transcriptCtrl {
+        flex-basis: 15%;
+        display: inline-flex;
+        justify-content: space-evenly;
+        .transcript {
+            font-size: 1.2rem;
+            border : none;
+            background-color : transparent;
+            color: $controlsColor;
+            outline: 0;
+            &:hover {
+                cursor: pointer;
+                .fa {
+                    color :lighten($controlsColor, 20%);
+                }
+            }
+        }
+    }
+}
+
+
+
+
 .playlist{
     //top : 40%;
     position: absolute;
@@ -300,3 +324,9 @@ body {
      width: 75%;
      height: 30%;
   }
+
+  #closeFeedbackBtn{
+    display:none;
+  }
+
+ 

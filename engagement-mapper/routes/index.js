@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   //res.sendFile('/public/WEB/mainPage.html');
 
-  res.sendFile('../public/WEB/mainPage.html', { root: __dirname });
+  res.send('<script> window.location.href = "mainPage.html"; </script>');
 });
 
 module.exports = router;

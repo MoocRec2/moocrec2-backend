@@ -20,10 +20,9 @@
 <body>
     <div class="container">
         <div class="videoPlayer showControls">
-            <div class="videoTitle">
-                Animation Video Style
+            <div id="videoTitle" class="videoTitle">
+                TESTVIDEO01.MP4
             </div>
-
             <video id="video" preload="auto" src="testVideo1.mp4" type="video/mp4" role="player" autoplay="true">
             </video>
 
@@ -56,11 +55,16 @@
                         </div>
                     </div>
 
+
+
                     <!-- Playback control-->
                     <div class="playbackCtrl">
-                        <button id="backBtn" class="btn backward" role="playerControl">
-                            <i class="fa fa-fast-backward" role="previousSegment"></i>
-                        </button>
+                        <!-- Transcript -->
+                        <div class="transcriptCtrl">
+                            <button id="transcriptBtn" class="transcript" role="playerControl">
+                                <i class="fa fa-file-o" role="transcript"></i>
+                            </button>
+                        </div>
                         <button id="playpauseBtn" class="btn playPausebtn play" role="playerControl">
                             <i id="playIcon" class="fa fa-play" role="playbackControl"></i>
                             <i id="pauseIcon" class="fa fa-pause" role="playbackControl"></i>
@@ -69,6 +73,7 @@
                             <i class="fa fa-fast-forward" role="nextSegment"></i>
                         </button>
                     </div>
+
 
                     <!-- full screen-->
                     <div class="fullscreenCtrl">
@@ -81,20 +86,30 @@
         </div>
     </div>
 
+    <div class="whatsInLine">
+        <p>Check what's in line .. </p>
+    </div>
+
     <!-- NEWLY TRIED -->
     <div class="playlist">
         <figure id="video_player">
             <figcaption>
                 <img id="playListItemTalkingHead" src="poster.png" class="playlistItem" source="testVideo1.mp4"
-                    role="playlist" alt="Nambia Timelapse 1">
+                    role="playlist" alt="Nambia Timelapse 1" data-toggle="popover" data-placement="top"
+                    data-content="Talking Head Video">
+
                 <img id="playListItemAnimation" src="poster.png" class="playlistItem" source="testVideo2.mp4"
-                    role="playlist" alt="Nambia Timelapse 2">
+                    role="playlist" alt="Nambia Timelapse 2" data-toggle="popover" data-placement="top"
+                    data-content="Animation Video">
                 <img id="playListItemPresentation" src="poster.png" class="playlistItem" source="testVideo3.mp4"
-                    role="playlist" alt="Nambia Timelapse 3">
+                    role="playlist" alt="Nambia Timelapse 3" data-toggle="popover" data-placement="top"
+                    data-content="Presentation Slides Video">
                 <img id="playListItemKhanAcademy" src="poster.png" class="playlistItem" source="testVideo4.mp4"
-                    role="playlist" alt="Nambia Timelapse 1">
+                    role="playlist" alt="Nambia Timelapse 1" data-toggle="popover" data-placement="top"
+                    data-content="khan Academ Writing Video">
                 <img id="playListItemCodeTutorial" src="poster.png" class="playlistItem" source="testVideo5.mp4"
-                    role="playlist" alt="Nambia Timelapse 2">
+                    role="playlist" alt="Nambia Timelapse 2" data-toggle="popover" data-placement="top"
+                    data-content="Audio">
             </figcaption>
         </figure>
     </div>
@@ -106,7 +121,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="popUpModelLabel"> Tell us about your learning experience .. </h5>
+                    <h5 class="modal-title" id="popUpModelLabel"> Help us identify your preference! </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -144,6 +159,7 @@
                 <div class="modal-footer">
                     <button id="closeFeedbackBtn" type="button" class="btn btn-secondary"
                         data-dismiss="modal">Close</button>
+                    <button id="replayBtn" role="replayControl" type="button" class="btn btn-primary">Replay</button>
                     <button id="submitFeedbackBtn" type="button" class="btn btn-primary">Next Video Style</button>
                 </div>
             </div>
@@ -151,11 +167,12 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-        </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+        </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
         </script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="js/starrr.js"></script>

@@ -8,17 +8,10 @@ router.get('/', function(req, res, next) {
 
 // Receive all activity data from the UI.
 router.post('/activity', function(req, res, next) {
-    var allVideos = ["testVideo1.mp4", "testVideo2.mp4", "testVideo3.mp4", "testVideo4.mp4", "testVideo5.mp4"];
+    var allVideos = ["testVideo1.mp4", "testVideo2.mp4", "testVideo3.mp4"];
     var activities = req.body.Activity;
     var feedbacks = req.body.Feedback;
     var segmentLength = 3600; // miliseconds.
-
-    var skippedSegments = [];
-    var unskipped = [];
-    var mutedSegments = [];
-    var easinessToUnderstand = [];
-    var interestingToWatch = [];
-    var watchedScore = {};
 
     // Get rid of full video path.
     for (var i = 0; i < activities.length; i++) {
@@ -33,68 +26,89 @@ router.post('/activity', function(req, res, next) {
         feedbacks[i]['VideoSegment'] = path;
     } 
 
+    /* Analyze user activity */
 
-    // Analyze activity.
+    // Sort based on at what time of each segment the actions were
+    // performed.
+    // maximize, skip, mute, replay, seek
+    // if a video is not skipped, we consider the video was skipped after,
+    // its full duration; for consistency.
+    var activityScore = {
+        'testVideo1.mp4': [0,segmentLength,0,0,0],
+        'testVideo2.mp4': [0,segmentLength,0,0,0],
+        'testVideo3.mp4': [0,segmentLength,0,0,0],
+    };
+    var skippedSegments = {};
+
     activities.forEach(activity => {
         var videoSegment = activity['VideoSegment'];
+        var control = activity['ElementRole'];
 
-        // Score skipped segmetns.
-        if (activity['ElementRole'] == 'nextSegment' || activity['ElementRole'] == 'previousSegment') {
-            skippedSegments.push(activity['VideoSegment']);
-
-            // Highest duration of the segment watched is found out in case,
-            // the user watched the same segment more than once.
-            if (!watchedScore.hasOwnProperty('TimeAtVideoSegment')) {
-                watchedScore[videoSegment] = (activity['TimeAtVideoSegment'] / segmentLength) * 100;  // 100%.
-            }
-            else {
-                var score = (activity['TimeAtVideoSegment'] / segmentLength) * 100;
-                if (score > watchedScore[videoSegment]) {
-                    watchedScore[videoSegment] = score;
+        switch(control) {
+            case 'fullScreen': activityScore[videoSegment][0] += 1; break;
+            case 'mute': activityScore[videoSegment][2] += 1; break;
+            case 'replayControl': activityScore[videoSegment][3] += 1; totalReplays += 1; break;
+            case 'seekControl': activityScore[videoSegment][4] += 1; break;
+            case 'nextSegment': 
+                // If replayed segments are skipped, we might get multiple skipped actions
+                // for same video.
+                // In that case, only consider the occurance with highest watched-duration.
+                if (!skippedSegments.hasOwnProperty(videoSegment)) { skippedSegments[videoSegment] = 0; };
+                if (activity['TimeAtVideoSegment'] > skippedSegments[videoSegment]) {
+                    skippedSegments[videoSegment] = activity['TimeAtVideoSegment'];
                 }
-            }
-        }
-
-        // Noting down muted segments.
-        else if (activity['ElementRole'] == 'mute') {
-            mutedSegments.push(activity['VideoSegment']);
-        }
-    });
-
-    // Fully watched segments.
-    for (var i = 0; i < allVideos.length; i++) {
-        var commonElement = false;
-        for (var k = 0; k < skippedSegments.length; k++) {
-            if (skippedSegments[k] == allVideos[i]) {
-                commonElement = true;
                 break;
-            }
+            
+            default: break;
         }
-
-        if (commonElement) {
-            unskipped.push(allVideos[i]);
-        }
-    }
-  
-    // Analyze feedback.
-    easinessToUnderstand = feedbacks.sort(function(a, b) {
-        return b.QuestionOneRating > a.QuestionOneRating ? 1 : b.QuestionOneRating < a.QuestionOneRating ? -1 : 0;
+    });
+    
+    // Skipped segments.
+    Object.keys(skippedSegments).forEach(videoSegment => {
+        activityScore[videoSegment][1] = skippedSegments[videoSegment];
     });
 
-    interestingToWatch = feedbacks.sort(function(a, b) {
-        return b.QuestionTwoRating > a.QuestionTwoRating ? 1 : b.QuestionTwoRating < a.QuestionTwoRating ? -1 : 0;
+    
+    /* Analyze user feedback */
+    // Get the average of the two questions' feedback.
+    var feedbackScore = {};
+    feedbacks.forEach(feedback => {
+        var videoSegment = feedback['VideoSegment'];
+        var q1 = feedback['QuestionOneRating'];
+        var q2 = feedback['QuestionTwoRating'];
+
+        feedbackScore[videoSegment] = (q1 + q2) / 2;
     });
 
-    console.log(req.body);
-    console.log('\n\n');
-    console.log(skippedSegments);
-    console.log(unskipped);
-    console.log(mutedSegments);
-    console.log(easinessToUnderstand);
-    console.log(interestingToWatch);
-    console.log(watchedScore);
+    /* Analyze activity and feedback scores together. */
+    var finalScore = {};
+    allVideos.forEach(videoSegment => {
+        finalScore[videoSegment] = 0;
+        
+        // considering activity score.
+        // consider maximize, skip and replay actions.
+        // order in array:- maximize, skip, mute, replay, seek
+        if (activityScore[videoSegment][0] > 0) { finalScore[videoSegment] += 0.2; }    // maximize.
+        if (activityScore[videoSegment][3] > 0) { finalScore[videoSegment] += 0.2; }    // replay.
+        finalScore[videoSegment] += (activityScore[videoSegment][1] / segmentLength);     // skipped duration score.
 
-    res.send({});
+        // considering feedback score average.
+        finalScore[videoSegment] += feedbackScore[videoSegment];
+    });
+
+    // Highest score.
+    var scoresArray = [];
+    Object.keys(finalScore).forEach(key => {
+        scoresArray.push({
+            'VideoSegment': key,
+            'Score': finalScore[key]
+        });
+    });
+    
+    // Highest scored video segment.
+    var result = scoresArray.reduce((prev, current) => (prev.y > current.y) ? prev : current)
+
+    res.send({'HighestScore': result, 'AllScores': finalScore});
 });
 
 module.exports = router;
