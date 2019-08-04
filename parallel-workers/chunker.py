@@ -129,7 +129,7 @@ def get_logical_chunks(video_path: str, chunk_length=60) -> list:
             end_frame = frame_count if end_frame > frame_count else end_frame
 
             chunks.append({
-                'ParentFile': video_path,
+                'ParentFile': video_path.split('/').pop(),  # Just get the file name.
                 'StartFrame': start_frame,
                 'EndFrame': end_frame,
                 'Position': chunk_number,
@@ -141,4 +141,3 @@ def get_logical_chunks(video_path: str, chunk_length=60) -> list:
         return chunks
     else:
         return []
-

@@ -14,19 +14,40 @@ from datetime import datetime
 from mq_common import init_mq
 import sys
 import json
+import logging
 import pika
 import os
 
 
+# Set up logging.
+logging.basicConfig(
+    filename='sender.log',
+    filemode='w',
+    format='%(asctime)s - %(message)s',
+    level=logging.INFO)
+logging.info('Video analyzer started.')
+
 # MQ details.
-KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'mq')
+KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
 HOST = os.getenv('MQ_HOST', '13.235.16.166')
 USERNAME = os.getenv('MQ_USERNAME', 'worker')
 PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
 QUEUE = init_mq(host=HOST, name_queue=KEY, username=USERNAME, password=PASSWORD)
 
-video = '/Users/anushka/CDAP/moocrec2-backend/parallel-workers/video.mp4'
+if QUEUE is not None:
+    logging.info('Initiated connection to message queue "{queue}" at "{host}" as user "{user}".'.format(
+        queue=KEY,
+        host=HOST,
+        user=USERNAME
+    ))
+
+
+video = './video.mp4'
 chunks = get_logical_chunks(video)
 
 for chunk in chunks:
     QUEUE.basic_publish(exchange='',routing_key=KEY, body=json.dumps(chunk, default=str))
+    logging.info('Send -- {body} --> "{queue}".'.format(
+        queue=KEY,
+        body=json.dumps(chunk, default=str)
+    ))

@@ -7,3 +7,8 @@ worker:
         - MQ_PASSWORD=worker
         - MQ_WORKER_QUEUE_NAME=worker_queue
         - MQ_ANALYZER_QUEUE_NAME=analyzer_queue
+        - VIDEO_PATH=/tmp
+    volumes:
+        - /tmp/videos:/tmp
+        
+        

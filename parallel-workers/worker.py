@@ -11,7 +11,6 @@ NOTE: Use JSON.
       Therefore, within Python, convert the JSON string in the message,
       to a dictionary.
 """
-
 from datetime import datetime
 from mq_common import init_mq
 from time import time
@@ -19,13 +18,15 @@ import random
 import logging
 import json
 import os
+import sys
 
 # MQ details.
-WORKER_KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'mq_w')
-ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'mq_a')
+WORKER_KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
+ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'analyzer_queue')
 HOST = os.getenv('MQ_HOST', 'localhost')
 USERNAME = os.getenv('MQ_USERNAME', 'worker')
 PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
+VIDEO_DIRECTORY = os.getenv('VIDEO_DIRECTORY', '/tmp')
 
 WORKER_QUEUE = init_mq(
     host=HOST, name_queue=WORKER_KEY, username=USERNAME, password=PASSWORD)
@@ -44,6 +45,36 @@ logging.info('Worker ' + str(WORKER_ID) + ' started at ' +
              str(datetime.utcnow().isoformat()))
 
 
+def absolute_path(directory: str, filename: str) -> str:
+    """
+    Creates an absolute path to a file based on the file name and the directory.
+    This is rather trivial and is used to get the absolute path without any additional /
+
+    :param directory
+        Path to the directory in which the file is.
+    :param filename
+        Name of the file.
+
+    :returns str
+        Absolute path to the file.
+    """
+
+    # Verify directory path and format it.
+    if not directory.endswith('/'):
+        directory = directory + '/'
+    if not directory.startswith('/'):
+        directory = '/' + directory
+
+    # Verify filename and format it.
+    if filename.startswith('.'):
+        filename = filename[1:]
+    if filename.startswith('/'):
+        filename = filename[1:]
+
+    return '{directory}{filename}'.format(
+        directory=directory, filename=filename)
+
+
 def on_message(channel, method, properties, body):
     """
     Invokes the relevant video chunking method based
@@ -55,12 +86,14 @@ def on_message(channel, method, properties, body):
     try:
         message = json.loads(body)
         # Act on the message.
-        video_path = message['ParentFile'] if 'ParentFile' in message.keys(
+        filename = message['ParentFile'] if 'ParentFile' in message.keys(
         ) else None
         start_frame = message['StartFrame'] if 'StartFrame' in message.keys(
         ) else None
         end_frame = message['EndFrame'] if 'EndFrame' in message.keys(
         ) else None
+
+        video_path = absolute_path(VIDEO_DIRECTORY, filename)
 
         logging.info(
             '[PROCESSING] Worker:{worker} --> Video:{video} --> Start Frame:{start_frame} <--> End Frame:{end_frame}'
@@ -71,21 +104,22 @@ def on_message(channel, method, properties, body):
                 end_frame=str(end_frame)))
 
         # Process the chunk.
-
+        #classification = videoStyles(video_path, start_frame, end_frame)
+        classification = 'Un-classified'
         # Send the response.
         # This response should have all the info of the initial message.
         # NOTE: Responses are sent to a different queue.
         response = message
-        response['Classification'] = 'Animation'
+        response['Classification'] = 'Un-classified'
         response['WorkerId'] = str(WORKER_ID)
         ANALYZER_QUEUE.basic_publish(
             exchange='',
             routing_key=ANALYZER_KEY,
             body=json.dumps(response, default=str))
-        
+
         # Send acknowladgement.
         channel.basic_ack(delivery_tag=method.delivery_tag)
-        
+
         logging.info(
             '[CLASSIFIED] Worker:{worker} --> Video:{video} --> Start Frame:{start_frame} <--> End Frame:{end_frame} --> Classification:{classification}'
             .format(
@@ -93,7 +127,7 @@ def on_message(channel, method, properties, body):
                 video=video_path,
                 start_frame=str(start_frame),
                 end_frame=str(end_frame),
-                classification='Animation'))
+                classification=classification))
 
     except ValueError:
         message = body
@@ -104,6 +138,7 @@ print('Worker', WORKER_ID, 'started.\n\n')
 # We only acknowladge the message after the task is complete,
 # This ensures that the message remains in the qeueu even if the,
 # worker crashes during processing.
-WORKER_QUEUE.basic_consume(queue=WORKER_KEY, auto_ack=False, on_message_callback=on_message)
+WORKER_QUEUE.basic_consume(
+    queue=WORKER_KEY, auto_ack=False, on_message_callback=on_message)
 # Start.
 WORKER_QUEUE.start_consuming()
