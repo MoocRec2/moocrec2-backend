@@ -14,6 +14,7 @@ NOTE: Use JSON.
 from datetime import datetime
 from mq_common import init_mq
 from time import time
+from classifier import videoStyles
 import random
 import logging
 import json
@@ -104,13 +105,13 @@ def on_message(channel, method, properties, body):
                 end_frame=str(end_frame)))
 
         # Process the chunk.
-        #classification = videoStyles(video_path, start_frame, end_frame)
-        classification = 'Un-classified'
+        head_c,code_c,slide_c  = videoStyles(video_path, start_frame, end_frame)
+        classification = {'Talking Head': head_c, 'Slides': slide_c, 'Code': code_c}
         # Send the response.
         # This response should have all the info of the initial message.
         # NOTE: Responses are sent to a different queue.
         response = message
-        response['Classification'] = 'Un-classified'
+        response['Classification'] = classification
         response['WorkerId'] = str(WORKER_ID)
         ANALYZER_QUEUE.basic_publish(
             exchange='',

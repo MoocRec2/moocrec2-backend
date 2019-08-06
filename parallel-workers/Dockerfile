@@ -3,16 +3,19 @@
 # and the classifier.
 # Therefore, an intermediate container is used to first install,
 # those modules via requirements.txt
-FROM python:3.7-slim
+FROM jjanzic/docker-python3-opencv
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Install Python3.7 and other libraries(pika lib).
-RUN pip install pika opencv-python 
+RUN pip3 install pika keras tensorflow pillow
 
-COPY mq_common.py /usr/src/app
-COPY worker.py /usr/src/app
+COPY mq_common.py /app
+COPY worker.py /app
+COPY classifier.py /app
+COPY vgg16_model.h5 /app
+#COPY ./video_classifier /usr/src/app/video-classifier
 #ADD video-classifier /usr/src/app
 #RUN mkdir -p /usr/src/app/video-classifier/images
 
-CMD ["python", "./worker.py"]
+CMD ["python3", "./worker.py"]
