@@ -19,9 +19,21 @@ router.get('/top-rated', (req, res) => {
 
 router.get('/search/:query', (req, res) => {
     var query = req.params.query
-    console.log(query)
     courseModel.find({ title: { $regex: new RegExp(query), $options: 'i' } }).limit(10).exec().then(documents => {
         res.status(200).send(documents)
+    }, error => {
+        console.error(error)
+        res.status(500).send('Error')
+    })
+})
+
+router.get('/details/:id', (req, res) => {
+    var id = req.params.id
+    courseModel.find({ key: id }).then(document => {
+        if (document.length >= 1)
+            res.status(200).send(document[0])
+        else
+            res.status(404).send('Not Found')
     }, error => {
         console.error(error)
         res.status(500).send('Error')
