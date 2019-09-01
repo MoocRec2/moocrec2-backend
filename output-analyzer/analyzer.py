@@ -41,12 +41,16 @@ def on_message(channel, method, properties, body):
             probability_talking_head = classifications['Talking Head']
             probability_slides = classifications['Slides']
             probability_code = classifications['Code']
+            probability_animation = classifications['Animation']
+            probability_writing = classifications['Writing']
             
             if not document_exists('moocrec-v2', 'classifications', 'Course', mooc):
                 new_document = {
                     'TalkingHead': probability_talking_head,
                     'Slides': probability_slides,
                     'Code': probability_code,
+                    'Animation': probability_animation,
+                    'Writing': probability_writing,
                     'Course': mooc
                 }
                 save('moocrec-v2', 'classifications', 'Course', mooc, new_document)
@@ -56,7 +60,9 @@ def on_message(channel, method, properties, body):
                 updated_document = {
                     'TalkingHead': (existing_document['TalkingHead'] + probability_talking_head) / 2,
                     'Slides': (existing_document['Slides'] + probability_slides) / 2,
-                    'Code': (existing_document['Code'] + probability_code) / 2
+                    'Code': (existing_document['Code'] + probability_code) / 2,
+                    'Animation': (existing_document['Animation'] + probability_animation) / 2,
+                    'Writing': (existing_document['Writing'] + probability_writing) / 2,
                 }
                 save('moocrec-v2', 'classifications', 'Course', mooc, updated_document)
 
