@@ -17,8 +17,6 @@ model = VGG16(weights='imagenet', include_top=False)
 
 video_directory = './videos/'
 img_directory = './images/'
-num = 0
-count = 0
 model = VGG16(weights='imagenet', include_top=False )
 
 
@@ -51,7 +49,8 @@ def predict(file):
     return prediction
 
 def videoStyles(file_, start_frame, end_frame):
-    global count,head,code,slide,num
+    num = 0
+    count = 0
     cap = cv2.VideoCapture(file_)
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     end_frame = length-1 if length < end_frame else end_frame-1
