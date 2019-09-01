@@ -29,9 +29,9 @@ logging.info('Video analyzer started.')
 
 # MQ details.
 KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
-HOST = os.getenv('MQ_HOST', '13.235.16.166')
-USERNAME = os.getenv('MQ_USERNAME', 'worker')
-PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
+HOST = os.getenv('MQ_HOST', '13.127.220.123')
+USERNAME = os.getenv('MQ_USERNAME', 'orchestrator')
+PASSWORD = os.getenv('MQ_PASSWORD', 'orchestrator')
 QUEUE = init_mq(host=HOST, name_queue=KEY, username=USERNAME, password=PASSWORD)
 
 if QUEUE is not None:
@@ -42,7 +42,7 @@ if QUEUE is not None:
     ))
 
 
-video = './video.mp4'
+video = './video2.mp4'
 chunks = get_logical_chunks(video)
 
 for chunk in chunks:

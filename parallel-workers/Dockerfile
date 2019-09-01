@@ -14,8 +14,5 @@ COPY mq_common.py /app
 COPY worker.py /app
 COPY classifier.py /app
 COPY vgg16_model.h5 /app
-#COPY ./video_classifier /usr/src/app/video-classifier
-#ADD video-classifier /usr/src/app
-#RUN mkdir -p /usr/src/app/video-classifier/images
 
 CMD ["python3", "./worker.py"]
