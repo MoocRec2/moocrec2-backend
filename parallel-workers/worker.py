@@ -127,7 +127,7 @@ def on_message(channel, method, properties, body):
 # MQ details.
 WORKER_KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
 ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'analyzer_queue')
-HOST = os.getenv('MQ_HOST', 'localhost')
+HOST = os.getenv('MQ_HOST', '13.127.220.123')
 USERNAME = os.getenv('MQ_USERNAME', 'worker')
 PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
 VIDEO_DIRECTORY = os.getenv('VIDEO_DIRECTORY', '/tmp')

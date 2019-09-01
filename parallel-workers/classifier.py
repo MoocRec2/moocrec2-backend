@@ -19,9 +19,6 @@ video_directory = './videos/'
 img_directory = './images/'
 num = 0
 count = 0
-head = 0
-code = 0
-slide = 0
 model = VGG16(weights='imagenet', include_top=False )
 
 
@@ -59,6 +56,7 @@ def videoStyles(file_, start_frame, end_frame):
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     end_frame = length-1 if length < end_frame else end_frame-1
     
+    print(file_)
     print('[INFO] Video file: {file}'.format(file=file_))
     print('[INFO] Number of frames in the video: {frames}\n[INFO] Frames range to be classified: {sframe} --> {eframe}'.format(frames=length, sframe=start_frame, eframe=end_frame))
     
@@ -71,10 +69,15 @@ def videoStyles(file_, start_frame, end_frame):
             cv2.imwrite(name, frame)
 
     cap.release()
-    list_img = os.listdir(img_directory)
-    list_img = [img for img in list_img if 'to_be_classified' in img]
-
+    dir_content = os.listdir(img_directory)
+    list_img = [img for img in dir_content if 'to_be_classified' in img]   # to avoid unnecessary files being read.
     img_count = len(list_img)
+
+    print('[INFO] Directory contains #{count} images'.format(count=img_count))
+    # Probabilities for each style.
+    head = 0
+    code = 0
+    slide = 0 
     for img in list_img:
         temp = predict(img_directory+img)
         if temp == 'head':
