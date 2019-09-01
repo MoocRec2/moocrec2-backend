@@ -19,7 +19,21 @@ import random
 import json
 import os
 import sys
+import pika
 import subprocess
+
+# MQ details.
+WORKER_KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
+ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'analyzer_queue')
+HOST = os.getenv('MQ_HOST', '13.127.220.123')
+USERNAME = os.getenv('MQ_USERNAME', 'worker')
+PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
+VIDEO_DIRECTORY = os.getenv('VIDEO_DIRECTORY', '/tmp')
+
+WORKER_ID = None
+
+WORKER_QUEUE = None 
+ANALYZER_QUEUE = None
 
 
 def get_hostname():
@@ -95,8 +109,8 @@ def on_message(channel, method, properties, body):
                 end_frame=str(end_frame)))
 
         # Process the chunk.
-        head_c,code_c,slide_c  = videoStyles(video_path, start_frame, end_frame)
-        classification = {'Talking Head': head_c, 'Slides': slide_c, 'Code': code_c}
+        head_c,code_c,slide_c,animation_p,writing_p  = videoStyles(video_path, start_frame, end_frame)
+        classification = {'Talking Head': head_c, 'Slides': slide_c, 'Code': code_c, 'Animation': animation_p, 'Writing': writing_p}
         # Send the response.
         # This response should have all the info of the initial message.
         # NOTE: Responses are sent to a different queue.
@@ -123,30 +137,47 @@ def on_message(channel, method, properties, body):
     except ValueError:
         message = body
 
-# Init connection.
-# MQ details.
-WORKER_KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
-ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'analyzer_queue')
-HOST = os.getenv('MQ_HOST', '13.127.220.123')
-USERNAME = os.getenv('MQ_USERNAME', 'worker')
-PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
-VIDEO_DIRECTORY = os.getenv('VIDEO_DIRECTORY', '/tmp')
+def main():
+    global WORKER_KEY, ANALYZER_KEY, HOST, USERNAME, PASSWORD, VIDEO_DIRECTORY, WORKER_ID, WORKER_QUEUE, ANALYZER_QUEUE
 
-WORKER_QUEUE = init_mq(
-    host=HOST, name_queue=WORKER_KEY, username=USERNAME, password=PASSWORD)
-ANALYZER_QUEUE = init_mq(
-    host=HOST, name_queue=ANALYZER_KEY, username=USERNAME, password=PASSWORD)
+    while (True):   
+        try:
+            # Set up credentials.
+            credentials = pika.PlainCredentials(USERNAME, PASSWORD)
+            # Set up parameters for connection.
+            parameters = pika.ConnectionParameters(HOST, 5672, '/', credentials)
+            # Set up connection.
+            connection = pika.BlockingConnection(parameters)
+            # Queues.
+            WORKER_QUEUE = connection.channel()
+            WORKER_QUEUE.queue_declare(queue=WORKER_KEY)
+            ANALYZER_QUEUE = connection.channel()
+            ANALYZER_QUEUE.queue_declare(queue=ANALYZER_KEY)
+            # Get a random worker_id. If this is running on Docker, container id will be random.
+            hostname = get_hostname()
+            WORKER_ID = hostname['Output'] if hostname['Successful'] else str(int(time())) + str(random.randint(0, 9))
 
-# Get a random worker_id. If this is running on Docker, container id will be random.
-hostname = get_hostname()
-WORKER_ID = hostname['Output'] if hostname['Successful'] else str(int(time())) + str(random.randint(0, 9))
+            # Prep for consuming.
+            print('Worker', WORKER_ID, 'started.\n\n')
 
-# Prep for consuming.
-print('Worker', WORKER_ID, 'started.\n\n')
-# We only acknowladge the message after the task is complete,
-# This ensures that the message remains in the qeueu even if the,
-# worker crashes during processing.
-WORKER_QUEUE.basic_consume(
-    queue=WORKER_KEY, auto_ack=False, on_message_callback=on_message)
-# Start.
-WORKER_QUEUE.start_consuming()
+            # Listen forever.
+            try:
+                # We only acknowladge the message after the task is complete,
+                # This ensures that the message remains in the qeueu even if the,
+                # worker crashes during processing.
+                WORKER_QUEUE.basic_consume(
+                    queue=WORKER_KEY, auto_ack=False, on_message_callback=on_message)
+                WORKER_QUEUE.start_consuming()
+            except KeyboardInterrupt:
+                WORKER_QUEUE.stop_consuming()
+                connection.close()
+                break
+        
+        # If heartbeat fails when the on_message takes long to return.
+        except pika.exceptions.ConnectionClosedByBroker:
+            continue # continue the loop and re-establish the connection.
+        except pika.exceptions.AMQPHeartbeatTimeout:
+            continue
+
+if __name__ == "__main__":
+    main()

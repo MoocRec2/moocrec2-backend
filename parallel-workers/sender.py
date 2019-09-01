@@ -42,7 +42,7 @@ if QUEUE is not None:
     ))
 
 
-video = './sample_mooc+video2.mp4'
+video = './sample_mooc+video3.mp4'
 chunks = get_logical_chunks(video)
 
 for chunk in chunks:

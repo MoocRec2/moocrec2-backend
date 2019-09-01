@@ -41,11 +41,15 @@ def predict(file):
     features = model.predict(x)
     result = classifier.predict_classes(features)
     if result[0] == 0:
-        prediction = 'code'
+        prediction = 'animation'
     elif result[0] == 1:
-        prediction = 'head'
+        prediction = 'code'
     elif result[0] == 2:
+        prediction = 'head'
+    elif result[0] == 3:
         prediction = 'slide'
+    elif result[0] == 4:
+        prediction = 'writing'
     return prediction
 
 def videoStyles(file_, start_frame, end_frame):
@@ -77,6 +81,9 @@ def videoStyles(file_, start_frame, end_frame):
     head = 0
     code = 0
     slide = 0 
+    writing = 0
+    animation = 0
+    
     for img in list_img:
         temp = predict(img_directory+img)
         if temp == 'head':
@@ -85,13 +92,20 @@ def videoStyles(file_, start_frame, end_frame):
             code +=1
         elif temp == 'slide':
             slide +=1
+        elif temp == 'animation':
+            animation +=1
+        elif temp == 'writing':
+            writing +=1
 
     deleteImages()
 
     head_p = round(((head / img_count) * 100), 2)
     code_p = round(((code / img_count) * 100), 2)
     slide_p = round(((slide / img_count) * 100), 2)
+    animation_p = round(((animation / img_count) * 100), 2)
+    writing_p = round(((writing / img_count) * 100), 2)
 
-    print('[SUMMARY] Frames classified: {sframe} --> {eframe}. Classifications: Talking Head->{hc}, Code->{cc}, Slides->{sc}'.format(sframe=start_frame, eframe=end_frame, hc=head_p, cc=code_p, sc=slide_p))
+    print('[SUMMARY] Frames classified: {sframe} --> {eframe}. Classifications: Talking Head->{hc}, Code->{cc}, Slides->{sc}, Writing->{wc}, Animation->{ac}'.format(
+        sframe=start_frame, eframe=end_frame, hc=head_p, cc=code_p, sc=slide_p, wc=writing_p, ac=animation_p))
 
-    return head_p, code_p, slide_p
+    return head_p,code_p,slide_p,animation_p,writing_p
