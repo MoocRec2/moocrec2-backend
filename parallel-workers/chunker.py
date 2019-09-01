@@ -141,3 +141,4 @@ def get_logical_chunks(video_path: str, chunk_length=60) -> list:
         return chunks
     else:
         return []
+

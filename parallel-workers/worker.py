@@ -16,34 +16,24 @@ from mq_common import init_mq
 from time import time
 from classifier import videoStyles
 import random
-import logging
 import json
 import os
 import sys
+import subprocess
 
-# MQ details.
-WORKER_KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
-ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'analyzer_queue')
-HOST = os.getenv('MQ_HOST', 'localhost')
-USERNAME = os.getenv('MQ_USERNAME', 'worker')
-PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
-VIDEO_DIRECTORY = os.getenv('VIDEO_DIRECTORY', '/tmp')
 
-WORKER_QUEUE = init_mq(
-    host=HOST, name_queue=WORKER_KEY, username=USERNAME, password=PASSWORD)
-ANALYZER_QUEUE = init_mq(
-    host=HOST, name_queue=ANALYZER_KEY, username=USERNAME, password=PASSWORD)
+def get_hostname():
+    """
+    Returns the hostname of the running machine. Use this to identify a worker using,
+    Docker container id if Docker is used.
+    """
+    output = subprocess.Popen('hostname', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = output.communicate()
 
-WORKER_ID = str(int(time())) + str(random.randint(0, 9))
-
-# Logging set up.
-logging.basicConfig(
-    filename='worker.log',
-    filemode='w',
-    format='%(asctime)s - %(message)s',
-    level=logging.INFO)
-logging.info('Worker ' + str(WORKER_ID) + ' started at ' +
-             str(datetime.utcnow().isoformat()))
+    if stderr is not None:
+        return { 'Successful': False, 'Output': stderr }
+    else:
+        return { 'Successful': True, 'Output': stdout.decode('ASCII').replace('\n', '')}
 
 
 def absolute_path(directory: str, filename: str) -> str:
@@ -96,7 +86,7 @@ def on_message(channel, method, properties, body):
 
         video_path = absolute_path(VIDEO_DIRECTORY, filename)
 
-        logging.info(
+        print(
             '[PROCESSING] Worker:{worker} --> Video:{video} --> Start Frame:{start_frame} <--> End Frame:{end_frame}'
             .format(
                 worker=str(WORKER_ID),
@@ -121,7 +111,7 @@ def on_message(channel, method, properties, body):
         # Send acknowladgement.
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
-        logging.info(
+        print(
             '[CLASSIFIED] Worker:{worker} --> Video:{video} --> Start Frame:{start_frame} <--> End Frame:{end_frame} --> Classification:{classification}'
             .format(
                 worker=str(WORKER_ID),
@@ -133,6 +123,23 @@ def on_message(channel, method, properties, body):
     except ValueError:
         message = body
 
+# Init connection.
+# MQ details.
+WORKER_KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
+ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'analyzer_queue')
+HOST = os.getenv('MQ_HOST', 'localhost')
+USERNAME = os.getenv('MQ_USERNAME', 'worker')
+PASSWORD = os.getenv('MQ_PASSWORD', 'worker')
+VIDEO_DIRECTORY = os.getenv('VIDEO_DIRECTORY', '/tmp')
+
+WORKER_QUEUE = init_mq(
+    host=HOST, name_queue=WORKER_KEY, username=USERNAME, password=PASSWORD)
+ANALYZER_QUEUE = init_mq(
+    host=HOST, name_queue=ANALYZER_KEY, username=USERNAME, password=PASSWORD)
+
+# Get a random worker_id. If this is running on Docker, container id will be random.
+hostname = get_hostname()
+WORKER_ID = hostname['Output'] if hostname['Successful'] else str(int(time())) + str(random.randint(0, 9))
 
 # Prep for consuming.
 print('Worker', WORKER_ID, 'started.\n\n')
