@@ -42,8 +42,10 @@ if QUEUE is not None:
     ))
 
 
-video = './sample_mooc+video3.mp4'
+video = './Fundamentals_of_Parallelism_on_Intel_Architecture+introduction.mp4'
+video1 = './Fundamentals_of_Parallelism_on_Intel_Architecture+modern_code.mp4'
 chunks = get_logical_chunks(video)
+chunks = get_logical_chunks(video1)
 
 for chunk in chunks:
     QUEUE.basic_publish(exchange='',routing_key=KEY, body=json.dumps(chunk, default=str))

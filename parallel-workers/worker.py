@@ -109,8 +109,8 @@ def on_message(channel, method, properties, body):
                 end_frame=str(end_frame)))
 
         # Process the chunk.
-        head_c,code_c,slide_c,animation_p,writing_p  = videoStyles(video_path, start_frame, end_frame)
-        classification = {'Talking Head': head_c, 'Slides': slide_c, 'Code': code_c, 'Animation': animation_p, 'Writing': writing_p}
+        head_p,code_p,slide_p,animation_p,writing_p  = videoStyles(video_path, start_frame, end_frame)
+        classification = {'Talking Head': head_p, 'Slides': slide_p, 'Code': code_p, 'Animation': animation_p, 'Writing': writing_p}
         # Send the response.
         # This response should have all the info of the initial message.
         # NOTE: Responses are sent to a different queue.
@@ -177,6 +177,8 @@ def main():
         except pika.exceptions.ConnectionClosedByBroker:
             continue # continue the loop and re-establish the connection.
         except pika.exceptions.AMQPHeartbeatTimeout:
+            continue
+        except pika.exceptions.StreamLostError:
             continue
 
 if __name__ == "__main__":

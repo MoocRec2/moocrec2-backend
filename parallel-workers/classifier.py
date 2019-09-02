@@ -63,7 +63,7 @@ def videoStyles(file_, start_frame, end_frame):
     print('[INFO] Video file: {file}'.format(file=file_))
     print('[INFO] Number of frames in the video: {frames}\n[INFO] Frames range to be classified: {sframe} --> {eframe}'.format(frames=length, sframe=start_frame, eframe=end_frame))
     
-    for i in range(start_frame, end_frame, 50):
+    for i in range(start_frame, end_frame, 2):
         cap.set(1, i)
         res, frame = cap.read()
         name = '{directory}/to_be_classified_{i}.jpg'.format(directory='./images', i=i)
