@@ -179,6 +179,7 @@ def main():
         except pika.exceptions.AMQPHeartbeatTimeout:
             continue
         except pika.exceptions.StreamLostError:
+            connection.close()
             continue
 
 if __name__ == "__main__":

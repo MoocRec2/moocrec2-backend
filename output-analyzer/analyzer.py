@@ -84,7 +84,7 @@ def on_message(channel, method, properties, body):
 # Init connection.
 # MQ details.
 ANALYZER_KEY = os.getenv('MQ_ANALYZER_QUEUE_NAME', 'analyzer_queue')
-HOST = os.getenv('MQ_HOST', '13.127.220.123')
+HOST = os.getenv('MQ_HOST', '3.83.208.153')
 USERNAME = os.getenv('MQ_USERNAME', 'analyzer')
 PASSWORD = os.getenv('MQ_PASSWORD', 'analyzer')
 VIDEO_DIRECTORY = os.getenv('VIDEO_DIRECTORY', '/tmp')

@@ -2,7 +2,7 @@ worker:
     #container_name: service_worker
     build: .
     environment:
-        - MQ_HOST=13.127.220.123
+        - MQ_HOST=3.83.208.153
         - MQ_USERNAME=worker
         - MQ_PASSWORD=worker
         - MQ_WORKER_QUEUE_NAME=worker_queue

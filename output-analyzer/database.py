@@ -5,7 +5,7 @@ Responsible for handling MongoDB database connection.
 from pymongo import MongoClient
 
 MONGO_CONFIG = {
-    'host': '52.66.18.67',
+    'host': '3.228.104.174',
     'authDb': 'moocrec-v2',
     'user': 'user',
     'password': 'password',

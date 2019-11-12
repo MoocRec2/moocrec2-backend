@@ -29,7 +29,7 @@ logging.info('Video analyzer started.')
 
 # MQ details.
 KEY = os.getenv('MQ_WORKER_QUEUE_NAME', 'worker_queue')
-HOST = os.getenv('MQ_HOST', '13.127.220.123')
+HOST = os.getenv('MQ_HOST', '3.83.208.153')
 USERNAME = os.getenv('MQ_USERNAME', 'orchestrator')
 PASSWORD = os.getenv('MQ_PASSWORD', 'orchestrator')
 QUEUE = init_mq(host=HOST, name_queue=KEY, username=USERNAME, password=PASSWORD)
@@ -43,9 +43,7 @@ if QUEUE is not None:
 
 
 video = './Fundamentals_of_Parallelism_on_Intel_Architecture+introduction.mp4'
-video1 = './Fundamentals_of_Parallelism_on_Intel_Architecture+modern_code.mp4'
 chunks = get_logical_chunks(video)
-chunks = get_logical_chunks(video1)
 
 for chunk in chunks:
     QUEUE.basic_publish(exchange='',routing_key=KEY, body=json.dumps(chunk, default=str))
